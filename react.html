@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8" />
+		<script src="https://unpkg.com/react@16/umd/react.development.js"></script>
+		<script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
+		<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+    </head>
+    <body>
+        <div id="content"></div>
+        <script type="text/babel">
+            class Text extends React.Component
+            {
+                render()
+                {
+                    return <div>Костерева Е.О., Пронин Е.А., ПИ3-1<br /></div>;
+                }
+            }
+            class Knopka extends React.Component
+            {
+                constructor(props)
+				{
+                    super(props);
+                    this.f = this.f.bind(this);
+                }
+                img_src(x,y,i)
+                {
+                    console.log("otr");
+                    if(!this.nash_hod())
+                    {
+                        return i+".png";
+                    }
+                    if(this.is_vybor(x,y,i))
+                    {
+                        return "vyb.png"
+                    }
+                    if(this.vozm_hod(x,y,i))
+                    {
+                        return i+"_vozm.png";
+                    }
+                    return i+".png";
+                }
+                nasha_shashka(x,y)
+                {
+                    if((this.props.player===1)&&(["X","X2"].includes(this.props.pole[y][x])))
+                    {
+                        return true;
+                    }
+                    if((this.props.player===2)&&(["O","O2"].includes(this.props.pole[y][x])))
+                    {
+                        return true;
+                    }
+                    return false;
+                }
+                shashka_vraga(x,y)
+                {
+                    return (!this.nasha_shashka(x,y))&&(!this.kletka_pusto(x,y));
+                }
+                is_vybor(x,y,i)
+                {
+                    return (window.vyb_x===x)&&(window.vyb_y===y);
+                }
+                kletka_pusto(x,y)
+                {
+                    return this.props.pole[y][x]==="-";
+                }
+                vozm_hod(x,y,i)
+                {
+                    //console.log(i);
+                    if(!this.nash_hod())
+                    {
+                        return false;
+                    }
+                    if(window.vyb_x===null)
+                    {
+                        return false;
+                    }
+                    if(!this.kletka_pusto(x,y))
+                    {
+                        return false;
+                    }
+                    //для обычных перемещений:
+                    if(this.props.player===1)
+                    {
+                        if((window.vyb_x+1===x)&&(window.vyb_y-1===y))
+                        {
+                            return true;
+                        }
+                        if((window.vyb_x-1===x)&&(window.vyb_y-1===y))
+                        {
+                            return true;
+                        }
+                        if(this.props.pole[window.vyb_y][window.vyb_x]==="X2")
+                        {
+                            
+                            if((window.vyb_x+1===x)&&(window.vyb_y+1===y))
+                            {
+                                return true;
+                            }
+                            if((window.vyb_x-1===x)&&(window.vyb_y+1===y))
+                            {
+                                return true;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if((window.vyb_x+1===x)&&(window.vyb_y+1===y))
+                        {
+                            return true;
+                        }
+                        if((window.vyb_x-1===x)&&(window.vyb_y+1===y))
+                        {
+                            return true;
+                        }
+                        if(this.props.pole[window.vyb_y][window.vyb_x]==="O2")
+                        {
+                            if((window.vyb_x+1===x)&&(window.vyb_y-1===y))
+                            {
+                                return true;
+                            }
+                            if((window.vyb_x-1===x)&&(window.vyb_y-1===y))
+                            {
+                                return true;
+                            }
+                        }
+                    }
+                    //для атак:
+                    if(this.props.player===1)
+                    {
+                        if((window.vyb_x===x-2)&&(window.vyb_y===y+2))
+                        {
+                            if(this.shashka_vraga(x-1,y+1))
+                            {
+                                return true;
+                            }
+                        }
+                        if((window.vyb_x===x+2)&&(window.vyb_y===y+2))
+                        {
+                            if(this.shashka_vraga(x+1,y+1))
+                            {
+                                return true;
+                            }
+                        }
+                        if(this.props.pole[window.vyb_y][window.vyb_x]==="X2")
+                        {
+                            if((window.vyb_x===x-2)&&(window.vyb_y===y-2))
+                            {
+                                if(this.shashka_vraga(x-1,y-1))
+                                {
+                                    return true;
+                                }
+                            }
+                            if((window.vyb_x===x+2)&&(window.vyb_y===y-2))
+                            {
+                                if(this.shashka_vraga(x+1,y-1))
+                                {
+                                    return true;
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if((window.vyb_x===x-2)&&(window.vyb_y===y-2))
+                        {
+                            if(this.shashka_vraga(x-1,y-1))
+                            {
+                                return true;
+                            }
+                        }
+                        if((window.vyb_x===x+2)&&(window.vyb_y===y-2))
+                        {
+                            if(this.shashka_vraga(x+1,y-1))
+                            {
+                                return true;
+                            }
+                        }
+                        if(this.props.pole[window.vyb_y][window.vyb_x]==="O2")
+                        {
+                            if((window.vyb_x===x-2)&&(window.vyb_y===y+2))
+                            {
+                                if(this.shashka_vraga(x-1,y+1))
+                                {
+                                    return true;
+                                }
+                            }
+                            if((window.vyb_x===x+2)&&(window.vyb_y===y+2))
+                            {
+                                if(this.shashka_vraga(x+1,y+1))
+                                {
+                                    return true;
+                                }
+                            }
+                        }
+                    }
+                    return false;
+                }
+                nash_hod()
+                {
+                    if(window.break)
+                    {
+                        return false;
+                    }
+                    if((this.props.player===1)&&(this.props.sost==="hod1"))
+                    {
+                        return true;
+                    }
+                    if((this.props.player===2)&&(this.props.sost==="hod2"))
+                    {
+                        return true;
+                    }
+                    return false;
+                }
+                f()
+                {
+                    window.game.setState({ti:window.chislo++});
+                    var i=this.props.pole[this.props.y][this.props.x];
+                    if(!this.nash_hod())
+                    {
+                        return;
+                    }
+                    if(this.vozm_hod(this.props.x,this.props.y,i))
+                    {
+                        window.block=true;
+                        $.get("hod.php",{x1:window.vyb_x,y1:window.vyb_y,x2:this.props.x,y2:this.props.y})
+                        window.vyb_x=null;
+                        window.vyb_y=null;
+                    }
+                    if(this.nasha_shashka(this.props.x,this.props.y,i))
+                    {
+                        window.vyb_x=this.props.x;
+                        window.vyb_y=this.props.y;
+                    }
+                }
+                
+
+                render()
+                {
+                    var i=this.props.pole[this.props.y][this.props.x];
+                    var src=this.img_src(this.props.x,this.props.y,i);
+                    if((this.props.active)&&(window.block===false))
+                    {
+                        return <img src={src} onClick={this.f} />;
+                    }
+                    else
+                    {
+                        return <img src={src} />;
+                    }
+                }
+            }
+            class Game extends React.Component
+			{
+				constructor(props)
+				{
+                    super(props);
+                    window.block=false;
+                    window.vyb_x=null;
+                    window.vyb_y=null;
+                    window.game=this;
+                    window.chislo=1;
+                    this.state =
+					{
+						sost: "zagr",
+                        player: null,
+                        pole: null,
+                        ti:0
+                    };
+                    this.newGame = this.newGame.bind(this);
+                    this.joinGame = this.joinGame.bind(this);
+                    var component=this;
+                    var obn=function()
+                    {
+                        $.getJSON
+                        (
+                            "sost.php",
+                            {}, 
+                            function(data)
+                            {
+                                var f=false;//флаг необходимости обновления состояния
+                                if(component.state.pole===null)
+                                {
+                                    f=true;
+                                }
+                                else
+                                {
+                                    for(var i=0;i<3;i++)
+                                    {
+                                        for(var i2=0;i2<3;i2++)
+                                        {
+                                            if(data.pole[i][i2]!==component.state.pole[i][i2])
+                                            {
+                                                f=true;
+                                            }
+                                        }
+                                    }
+                                }
+                                if(component.state.sost!==data.sost)
+                                {
+                                    f=true;
+                                }
+                                if(f)
+                                {
+                                    component.setState({pole:data.pole,sost:data.sost});
+                                    console.log(component.state);
+                                }
+                                window.block=false;
+                            }
+                        );
+                    }
+                    obn();
+					setInterval(obn,1000);
+                }
+                newGame()
+                {
+                    window.block=true;
+                    this.setState({});
+                    $.get("newgame.php");
+                    this.setState({player:1});
+                }
+                joinGame()
+                {
+                    window.block=true;
+                    this.setState({});
+                    $.get("joingame.php");
+                    this.setState({player:2});
+                }
+                str_sost()
+                {
+                    if(this.state.sost==="wait")
+                    {
+                        return <div>Ожидание второго игрока...</div>;
+                    }
+                    if(this.state.player===null)
+                    {
+                        switch(this.state.sost)
+                        {
+                            case "hod1":
+                                return <div>Ходит игрок №1 (Белые)</div>;
+                                break;
+                            case "hod2":
+                                return <div>Ходит игрок №2 (Чёрные)</div>;
+                                break;
+                            case "win1":
+                                return <div>Выиграл игрок №1! (Белые)</div>;
+                                break;
+                            case "win2":
+                                return <div>Выиграл игрок №2! (Чёрные)</div>;
+                                break;
+                        }
+                    }
+                    else
+                    {
+                        if(this.state.player===1)
+                        {
+                            switch(this.state.sost)
+                            {
+                                case "hod1":
+                                    return <div>Ваш ход (Белые)</div>;
+                                    break;
+                                case "hod2":
+                                    return <div>Ход противника (Чёрные)</div>;
+                                    break;
+                                case "win1":
+                                    return <div>Вы выиграли!</div>;
+                                    break;
+                                case "win2":
+                                    return <div>Вы проиграли!</div>;
+                                    break;
+                            }
+                        }
+                        else
+                        {
+                            switch(this.state.sost)
+                            {
+                                case "hod2":
+                                    return <div>Ваш ход (Чёрные)</div>;
+                                    break;
+                                case "hod1":
+                                    return <div>Ход противника (Белые)</div>;
+                                    break;
+                                case "win2":
+                                    return <div>Вы выиграли!</div>;
+                                    break;
+                                case "win1":
+                                    return <div>Вы проиграли!</div>;
+                                    break;
+                            }
+                        }
+                    }
+                }
+                render()
+                {
+                    if(this.state.sost==="zagr")
+                    {
+                        return <div>Загрузка...</div>;
+                    }
+                    else if(((this.state.player===1)&&(this.state.sost==="hod1"))||((this.state.player===2)&&(this.state.sost==="hod2")))
+                    {
+                        var m=[];
+                        for(var i=0;i<8;i++)
+                        {
+                            m.push([]);
+                            for(var i2=0;i2<8;i2++)
+                            {
+                                m[i].push(<td><Knopka sost={this.state.sost} player={this.state.player} active={true} pole={this.state.pole} y={i} x={i2} /></td>);
+                            }
+                            m[i]=<tr>{m[i]}</tr>;
+                        }
+                        var str_sost=this.str_sost(this.state.sost);
+                        if(this.state.sost==="wait")
+                        {
+                            return <div><input type="button" value="Начать новую игру" onClick={this.newGame} /><input type="button" value="Присоединиться" onClick={this.joinGame} />{str_sost}<table><tbody>{m}</tbody></table></div>;
+                        }
+                        else
+                        {
+                            return <div><input type="button" value="Начать новую игру" onClick={this.newGame} />{str_sost}<table><tbody>{m}</tbody></table></div>;
+                        }
+                    }
+                    else
+                    {
+                        var m=[];
+                        for(var i=0;i<8;i++)
+                        {
+                            m.push([]);
+                            for(var i2=0;i2<8;i2++)
+                            {
+                                m[i].push(<td><Knopka sost={this.state.sost} player={this.state.player} active={false} pole={this.state.pole} y={i} x={i2} /></td>);
+                            }
+                            m[i]=<tr>{m[i]}</tr>;
+                        }
+                        var str_sost=this.str_sost(this.state.sost);
+                        if(this.state.sost==="wait")
+                        {
+                            return <div><input type="button" value="Начать новую игру" onClick={this.newGame} /><input type="button" value="Присоединиться" onClick={this.joinGame} />{str_sost}<table><tbody>{m}</tbody></table></div>;
+                        }
+                        else
+                        {
+                            return <div><input type="button" value="Начать новую игру" onClick={this.newGame} />{str_sost}<table><tbody>{m}</tbody></table></div>;
+                        }
+                        
+                    }
+                }
+            }
+            ReactDOM.render
+            (
+                <div><Text /><br /><Game /></div>,
+                document.getElementById('content')
+            );
+        </script>
+    </body>
+</html>

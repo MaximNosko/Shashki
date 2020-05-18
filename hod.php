@@ -1,0 +1,61 @@
+<?php
+$f=json_decode(file_get_contents("sost.txt"),true);
+$f["pole"][$_GET["y2"]][$_GET["x2"]]=$f["pole"][$_GET["y1"]][$_GET["x1"]];
+$f["pole"][$_GET["y1"]][$_GET["x1"]]="-";
+if(abs($_GET["x2"]-$_GET["x1"])>1)
+{
+    $f["pole"][($_GET["y2"]+$_GET["y1"])/2][($_GET["x2"]+$_GET["x1"])/2]="-";
+}
+if(($f["sost"]=="hod1")&&(($_GET["y2"]==0)||($_GET["y2"]==7)))
+{
+    $f["pole"][$_GET["y2"]][$_GET["x2"]]="X2";
+}
+if(($f["sost"]=="hod2")&&(($_GET["y2"]==0)||($_GET["y2"]==7)))
+{
+    $f["pole"][$_GET["y2"]][$_GET["x2"]]="O2";
+}
+$fw=true;
+for($y=0;$y<8;$y++)
+{
+    for($x=0;$x<8;$x++)
+    {
+        if($f["sost"]==="hod1")
+        {
+            if(($f["pole"][$y][$x]==="O")||($f["pole"][$y][$x]==="O2"))
+            {
+                $fw=false;
+            }
+        }
+        else
+        {
+            if(($f["pole"][$y][$x]==="X")||($f["pole"][$y][$x]==="X2"))
+            {
+                $fw=false;
+            }
+        }
+    }
+}
+if($f["sost"]=="hod1")
+{
+    if(!$fw)
+    {
+        $f["sost"]="hod2";
+    }
+    else
+    {
+        $f["sost"]="win1";
+    }
+}
+else
+{
+    if(!$fw)
+    {
+        $f["sost"]="hod1";
+    }
+    else
+    {
+        $f["sost"]="win2";
+    }
+}
+file_put_contents("sost.txt",json_encode($f));
+?>
